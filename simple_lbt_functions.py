@@ -19,6 +19,7 @@ from cued_sf2_lab.lbt import pot_ii
 # Code for LBT: pot, dct, idct, then ipot.
 
 def pot(X, N, s = 1):
+
     Xp = X.copy() # copy the non-transformed edges directly from X
     Xc = X.copy()
 
