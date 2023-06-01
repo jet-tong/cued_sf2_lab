@@ -72,7 +72,7 @@ def ipot(Zp, N, s = 1):
     return Z2
 
 
-def lbt(X, N=8, s=1, step=17, k=0.5): # rise1 = step/2 by default, so k=0.5 by default
+def lbt(X, N=8, s=1.31, step=17, k=0.5): # rise1 = step/2 by default, so k=0.5 by default
     Xp = pot(X, N, s)
     Y = dct(Xp, N)
     return Y
@@ -82,7 +82,7 @@ def ilbt(Yq, N=8, s=1):
     Zq = ipot(Zpq, N, s)
     return Zq
 
-def full_process_results(X, N=8, s=1, step=17, k=0.5): 
+def full_process_results(X, N=8, s=1.31, step=17, k=0.5): 
     Y = lbt(X, N, s, step, k)
     Yq = quantise(Y, step, rise1=k*step)
     Zq = ilbt(Yq, N, s)
@@ -102,5 +102,45 @@ def equal_bit_quantise(Y, bit):
     final_step = result.x[0]
     Yq = quantise(Y, final_step)
     return Yq
+
+def diagscan(N: int) -> np.ndarray:
+    '''
+    Generate diagonal scanning pattern
+
+    Returns:
+        A diagonal scanning index for a flattened NxN matrix
+
+        The first entry in the matrix is assumed to be the DC coefficient
+        and is therefore not included in the scan
+    '''
+    if N <= 1:
+        raise ValueError('Cannot generate a scan pattern for a {}x{} matrix'.format(N, N))
+
+    # Copied from matlab without accounting for indexing.
+    slast = N + 1
+    scan = [slast]
+    while slast != N * N:
+        while slast > N and slast % N != 0:
+            slast = slast - (N - 1)
+            scan.append(slast)
+        if slast < N:
+            slast = slast + 1
+        else:
+            slast = slast + N
+        scan.append(slast)
+        if slast == N * N:
+            break
+        while slast < (N * N - N + 1) and slast % N != 1:
+            slast = slast + (N - 1)
+            scan.append(slast)
+        if slast == N * N:
+            break
+        if slast < (N * N - N + 1):
+            slast = slast + N
+        else:
+            slast = slast + 1
+        scan.append(slast)
+    # Python indexing
+    return np.array(scan) - 1
 
 def huffman_enc(Yq):
