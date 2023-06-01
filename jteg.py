@@ -19,8 +19,8 @@ __all__ = [
     "huffdes",
     "huffenc",
     "dwtgroup",
-    "jpegenc",
-    "jpegdec",
+    "lbtenc",
+    "lbtdec",
     "vlctest",
 ]
 
@@ -737,7 +737,7 @@ def lbtdec(vlc: np.ndarray, qstep: float, N: int = 8, M: int = 8,
     #Z = colxfm(colxfm(Zi.T, C8.T).T, C8.T) ###################################################################################################
     Zq = ilbt(Zi, N=8, s=1)
 
-    return Z
+    return Zq
 
 
 def vlctest(vlc: np.ndarray) -> int:
