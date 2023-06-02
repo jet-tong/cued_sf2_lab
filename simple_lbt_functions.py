@@ -96,3 +96,36 @@ def full_process_results(X, N=8, s=1, step=17, k=0.5):
     cr = bits_X / bits_Yq  
 
     return rms, cr
+
+##########################################################################
+
+def LBT(X,N,s):
+    Xq = quantise(X,17)
+    e_xq = 256*256*bpp(Xq)
+    RMS_X = np.std(X-Xq)
+    Xp = X.copy()
+    Xc = X.copy()
+    t = np.s_[N//2:-N//2]
+    pf,pr = pot_ii(N,s)
+    cn = dct_ii(N)
+    # First do XP =  PF * X
+    Xp = colxfm(Xp[t,:],pf)
+    Xp = colxfm(Xp[:,t].T, pf).T
+    for i in range(256-N):
+        for j in range(256-N):
+            Xc[int(i+N/2),int(j+N/2)] = Xp[i,j]
+    # Then do DCT (XP)
+    Y = colxfm(colxfm(Xc, cn).T,cn).T
+    
+
+    Yq = Y
+    Yr = regroup(Yq,N)
+    Z = colxfm(colxfm(Yq.T, cn.T).T, cn.T)
+    Zp = Z
+    Z2 = Z
+    Zp = colxfm(Zp[:,t].T,pr.T).T
+    Zp = colxfm(Zp[t,:],pr.T)
+    for i in range(256-N):
+        for j in range(256-N):
+            Z2[int(i+N/2),int(j+N/2)] = Zp[i,j]
+    return Z2

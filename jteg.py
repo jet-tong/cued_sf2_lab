@@ -490,7 +490,7 @@ def dwtgroup(X: np.ndarray, n: int) -> np.ndarray:
 
 
 def lbtenc(X: np.ndarray, qstep: float, N: int = 8, M: int = 8,
-        opthuff: bool = False, dcbits: int = 8, log: bool = True
+        opthuff: bool = False, dcbits: int = 8, log: bool = True, s: float = 1.0
         ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     '''
     Encodes the image in X to generate a variable length bit stream.
@@ -522,7 +522,7 @@ def lbtenc(X: np.ndarray, qstep: float, N: int = 8, M: int = 8,
         print('Forward {} x {} DCT'.format(N, N))
     C8 = dct_ii(N)
     #Y = colxfm(colxfm(X, C8).T, C8).T ################################################################################################
-    Y = lbt(X, N, s=1)
+    Y = lbt(X, N, s)
 
     # Quantise to integers.
     if log:
@@ -611,7 +611,7 @@ def lbtenc(X: np.ndarray, qstep: float, N: int = 8, M: int = 8,
 
 def lbtdec(vlc: np.ndarray, qstep: float, N: int = 8, M: int = 8,
         hufftab: Optional[HuffmanTable] = None,
-        dcbits: int = 8, W: int = 256, H: int = 256, log: bool = True
+        dcbits: int = 8, W: int = 256, H: int = 256, log: bool = True, s: float = 1
         ) -> np.ndarray:
     '''
     Decodes a (simplified) JPEG bit stream to an image
@@ -735,8 +735,11 @@ def lbtdec(vlc: np.ndarray, qstep: float, N: int = 8, M: int = 8,
         print('Inverse {} x {} DCT\n'.format(N, N))
     C8 = dct_ii(N)
     #Z = colxfm(colxfm(Zi.T, C8.T).T, C8.T) ###################################################################################################
-    Zq = ilbt(Zi, N=8, s=1)
-
+    Zq = ilbt(Zi, N, s)
+    z_max = np.max(Zq)
+    z_min = np.min(Zq)
+    Zq = Zq * 256/np.abs(z_max - z_min)
+    Zq = Zq - np.min(Zq)
     return Zq
 
 
