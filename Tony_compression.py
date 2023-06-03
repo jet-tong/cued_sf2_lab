@@ -110,7 +110,7 @@ def equal_bit_quantise(Y, bit):
     return Yq
 
 
-def svdenc(idx,X):
+def svdenc1(idx,X):
     U,E,VT = np.linalg.svd(X)
     u1 = U[:,:idx]
     e1 = np.diag(E[:idx])
@@ -118,7 +118,7 @@ def svdenc(idx,X):
     Y = np.concatenate((u1.T,e1,v1t),axis = 1)
     return Y
 
-def svddec(idx,Y):
+def svddec1(idx,Y):
     u1 = Y[:,:256].T
     e1 = Y[:,256:256+49]
     v1t = Y[:,256+49:]
@@ -135,3 +135,24 @@ def quantise_to_bits(Y, bit):
     final_step = result.x[0]
     Yq = quantise(Y, final_step)
     return Yq
+
+def svdenc2(idx,X):
+    if idx >= 128:
+        raise 'idx is too large'
+    U,E,VT = np.linalg.svd(X)
+    u1 = U[:,:idx]
+    e1 = np.diag(E[:idx])
+    v1t = VT[:idx,:]
+    Y = np.zeros(X.shape)
+    Y[:idx,:] = u1.T
+    Y[idx:2*idx] = v1t
+    Y[idx*2+1,:idx] = E[:idx]
+    #Y = np.concatenate((u1.T,e1,v1t),axis = 1)
+    return Y
+
+def svddec2(idx,Y):
+    u1 = Y[:idx,:].T
+    e1 = np.diag(Y[idx*2+1,:idx])
+    v1t = Y[idx:2*idx]
+    Z = u1@e1@v1t
+    return Z
