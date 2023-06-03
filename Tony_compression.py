@@ -124,3 +124,14 @@ def svddec(idx,Y):
     v1t = Y[:,256+49:]
     Z = u1@e1@v1t
     return Z
+
+def quantise_to_bits(Y, bit):
+    def objective1(step):
+        Yq = quantise(Y,step, rise1=step)
+        vlc, header = encode(X,jpeg_quant_size = step)
+        b = vlc[:,1].sum()
+        return np.abs(b - bit)
+    result = minimize(objective1, 20, method='Nelder-Mead')
+    final_step = result.x[0]
+    Yq = quantise(Y, final_step)
+    return Yq
