@@ -15,7 +15,7 @@ __all__ = [
     "quant2",
     "quantise",
     "bpp",
-    "quant3"
+    "quant3",
     "quant4"
 ]
 
