@@ -15,6 +15,8 @@ __all__ = [
     "quant2",
     "quantise",
     "bpp",
+    "quant3"
+    "quant4"
 ]
 
 
@@ -265,7 +267,7 @@ def quant3(x, step, rise1=None):
     return q
 
 
-def quant2(q, step, rise1=None):
+def quant4(q, step, rise1=None):
     """
     Reconstruct matrix Y from quantised values q using steps of width step.
 
