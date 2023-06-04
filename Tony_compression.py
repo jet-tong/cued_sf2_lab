@@ -6,7 +6,7 @@ import numpy as np
 from cued_sf2_lab.familiarisation import load_mat_img, plot_image
 from cued_sf2_lab.laplacian_pyramid import quantise
 from cued_sf2_lab.laplacian_pyramid import bpp
-
+from typing import Tuple, NamedTuple, Optional
 from cued_sf2_lab.dct import dct_ii
 from cued_sf2_lab.dct import regroup
 from cued_sf2_lab.dct import colxfm
@@ -108,6 +108,7 @@ def equal_bit_quantise(Y, bit):
     final_step = result.x[0]
     Yq = quantise(Y, final_step)
     return Yq
+
 
 
 def svdenc1(idx,X):
