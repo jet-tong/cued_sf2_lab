@@ -223,6 +223,86 @@ def quant2(q, step, rise1=None):
         # Reconstruct quantised values and incorporate sign(q).
         y = q * step + np.sign(q) * (rise - step/2.0)
         return y
+    
+
+
+def quant3(x, step, rise1=None):
+    """
+    Quantise the matrix x using steps of width step.
+
+    The result is the quantised integers Q. If rise1 is defined,
+    the first step rises at rise1, otherwise it rises at step/2 to
+    give a uniform quantiser with a step centred on zero.
+    In any case the quantiser is symmetrical about zero.
+    """
+
+    table = np.array([
+        [16, 11, 10, 16, 24, 40, 51, 61],
+        [12, 12, 14, 19, 26, 58, 60, 55],
+        [14, 13, 16, 24, 40, 57, 69, 56],
+        [14, 17, 22, 29, 51, 87, 80, 62],
+        [18, 22, 37, 56, 68, 109, 103, 77],
+        [24, 35, 55, 64, 81, 104, 113, 92],
+        [49, 64, 78, 87, 103, 121, 120, 101],
+        [72, 92, 95, 98, 112, 100, 103, 99]
+    ])
+    table = step * table/16
+    if step <= 0:
+        q = x.copy()
+        return q
+    if rise1 is None:
+        rise = step
+    else:
+        rise = rise1
+    # Quantise abs(x) to integer values, and incorporate sign(x)..
+    q = np.zeros(x.shape)
+    size = 256//8
+    for i in range(8):
+        for j in range(8):
+            step = table[i,j]
+            temp = np.ceil((np.abs(x[i*size:(i+1)*size,j*size:(j+1)*size]) - rise)/step)
+            q[i*size:(i+1)*size,j*size:(j+1)*size] = temp*(temp > 0)*np.sign(x[i*size:(i+1)*size,j*size:(j+1)*size])
+    return q
+
+
+def quant2(q, step, rise1=None):
+    """
+    Reconstruct matrix Y from quantised values q using steps of width step.
+
+    The result is the reconstructed values. If rise1 is defined, the first
+    step rises at rise1, otherwise it rises at step/2 to give a uniform
+    quantiser with a step centred on zero.
+    In any case the quantiser is symmetrical about zero.
+    """
+
+    table = np.array([
+        [16, 11, 10, 16, 24, 40, 51, 61],
+        [12, 12, 14, 19, 26, 58, 60, 55],
+        [14, 13, 16, 24, 40, 57, 69, 56],
+        [14, 17, 22, 29, 51, 87, 80, 62],
+        [18, 22, 37, 56, 68, 109, 103, 77],
+        [24, 35, 55, 64, 81, 104, 113, 92],
+        [49, 64, 78, 87, 103, 121, 120, 101],
+        [72, 92, 95, 98, 112, 100, 103, 99]
+    ])
+    table = step * table/16
+
+    if step <= 0:
+        y = q.copy()
+        return y
+    if rise1 is None:
+        rise = step
+        return q * step
+    else:
+        rise = rise1
+        # Reconstruct quantised values and incorporate sign(q).
+        y = np.zeros(q.shape)
+        size = 256//8
+        for i in range(8):
+            for j in range(8):
+                table[i,j]
+                y[i*size:(i+1)*size,j*size:(j+1)*size] = q[i*size:(i+1)*size,j*size:(j+1)*size] * step + np.sign(q[i*size:(i+1)*size,j*size:(j+1)*size]) * (rise - step/2.0)
+        return y
 
 
 class QuantizingEncoder(Encoder):
