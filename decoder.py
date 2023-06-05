@@ -5,7 +5,7 @@ from common import my_function, HeaderType, jpeg_quant_size
 from jteg import *
 
 
-def decode(vlc: np.ndarray, header: HeaderType,jpeg_quant_size: float = 40.0) -> np.ndarray:
+def decode(vlc: np.ndarray, header: HeaderType,jpeg_quant_size: float = 48.115, s: float = 1.6099190603156157) -> np.ndarray:
     """
     Parameters:
         X: the input grayscale image
@@ -16,4 +16,4 @@ def decode(vlc: np.ndarray, header: HeaderType,jpeg_quant_size: float = 40.0) ->
     """
     # replace this with your chosen decoding scheme
     #return jpegdec(vlc, jpeg_quant_size, hufftab=header, log=False)
-    return lbtdec(vlc, jpeg_quant_size, hufftab=header, log=True, s=1.31)
+    return lbtdec(vlc, jpeg_quant_size, hufftab=header, log=False, s=s)
