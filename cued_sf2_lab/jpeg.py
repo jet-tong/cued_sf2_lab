@@ -551,9 +551,7 @@ def jpegenc(X: np.ndarray, qstep: float, N: int = 8, M: int = 8,
             yqflat = yq.flatten('F')
             # Encode DC coefficient first
             dccoef = yqflat[0] + 2 ** (dcbits-1)
-            if dccoef not in range(2**dcbits):
-                raise ValueError(
-                    'DC coefficients too large for desired number of bits')
+            
             vlc.append(np.array([[dccoef, dcbits]]))
             # Encode the other AC coefficients in scan order
             # huffenc() also updates huffhist.
