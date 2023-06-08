@@ -302,7 +302,7 @@ def quant4(q, step, rise1=None):
         size = 256//8
         for i in range(8):
             for j in range(8):
-                table[i,j]
+                step = table[i,j]
                 y[i*size:(i+1)*size,j*size:(j+1)*size] = q[i*size:(i+1)*size,j*size:(j+1)*size] * step + np.sign(q[i*size:(i+1)*size,j*size:(j+1)*size]) * (rise - step/2.0)
         return y
 
